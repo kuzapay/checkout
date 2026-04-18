@@ -1,6 +1,6 @@
-// import { error } from '@sveltejs/kit';
+
 import type { PageServerLoad } from './$types';
-// import { userCheckouts, user } from '$lib/server/db/schema';
+
 import { user, profile } from '$lib/server/db/schemas/auth-schema';
 import { userCheckouts } from '$lib/server/db/schemas/transactional';
 import { shops } from '$lib/server/db/schemas/shops';
@@ -12,7 +12,7 @@ export const load: PageServerLoad = async ({ params }) => {
 	const checkoutId = params.checkoutId;
 
 	if (!checkoutId) {
-		return {
+		return { 
 			ok: false,
 			message: 'The link used is incorrect. Kindly retry',
 			status: 422

@@ -3,7 +3,7 @@
 	import favicon from '$lib/assets/favicon.webp';
 
 	let { children } = $props();
-	let isOpen = $state(true);
+
 </script>
 
 <svelte:head>
