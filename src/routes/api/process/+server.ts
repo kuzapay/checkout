@@ -139,7 +139,7 @@ export async function POST({ request }) {
 			PartyA: formattedPhone,
 			PartyB: BUSINESS_SHORT_CODE,
 			PhoneNumber: formattedPhone,
-			CallBackURL:"https://api.kuzapay.app/transaction/process",
+			CallBackURL:"https://api.kuzapay.app/transaction/process/callback",
 			AccountReference: accountReference,
 			TransactionDesc: transactionDesc
 		};
