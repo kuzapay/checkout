@@ -1,10 +1,4 @@
-import {
-	CONSUMER_KEY,
-	CONSUMER_SECRET,
-	PASS_KEY,
-	CALLBACK_URL,
-	BUSINESS_SHORT_CODE
-} from '$env/static/private';
+import { CONSUMER_KEY, CONSUMER_SECRET, PASS_KEY, BUSINESS_SHORT_CODE } from '$env/static/private';
 interface StkPushPayload {
 	BusinessShortCode: string;
 	Password: string;
@@ -167,7 +161,6 @@ export async function initialize_mpesa_stk_push(
 		},
 		body: JSON.stringify(payload)
 	});
-	
 
 	return await response.json();
 }
@@ -189,10 +182,9 @@ export async function initialize_mpesa_reversal_Request(
 export async function check_transaction_status(
 	checkoutRequestId: string
 ): Promise<StkCheckStatusResponse> {
-
 	const accessToken = await getAccessToken();
 	const timestamp = getTimestamp();
-	
+
 	const password = getPassword(timestamp);
 
 	const payload: StkCheckStatusPayload = {
@@ -202,17 +194,14 @@ export async function check_transaction_status(
 		CheckoutRequestID: checkoutRequestId
 	};
 
-	const response = await fetch(
-		'https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query',
-		{
-			method: 'POST',
-			headers: {
-				Authorization: `Bearer ${accessToken}`,
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(payload)
-		}
-	);
+	const response = await fetch('https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query', {
+		method: 'POST',
+		headers: {
+			Authorization: `Bearer ${accessToken}`,
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(payload)
+	});
 
 	if (!response.ok) {
 		throw new Error('STK Query failed');

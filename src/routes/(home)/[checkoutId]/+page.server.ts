@@ -1,9 +1,8 @@
-
 import type { PageServerLoad } from './$types';
 
 import { user, profile } from '$lib/server/db/schemas/auth-schema';
 import { userCheckouts } from '$lib/server/db/schemas/transactional';
-import { shops } from '$lib/server/db/schemas/shops';
+
 import { decrypt } from '$lib/cryptography';
 import { db } from '$lib/server/db';
 import { eq } from 'drizzle-orm';
@@ -12,7 +11,7 @@ export const load: PageServerLoad = async ({ params }) => {
 	const checkoutId = params.checkoutId;
 
 	if (!checkoutId) {
-		return { 
+		return {
 			ok: false,
 			message: 'The link used is incorrect. Kindly retry',
 			status: 422
@@ -23,7 +22,9 @@ export const load: PageServerLoad = async ({ params }) => {
 		const queriedCheckout = await db
 			.select()
 			.from(userCheckouts)
-			.where(eq(userCheckouts.checkoutId, checkoutId)).limit(1).then((res) => res[0]);
+			.where(eq(userCheckouts.checkoutId, checkoutId))
+			.limit(1)
+			.then((res) => res[0]);
 
 		console.info(queriedCheckout);
 		if (!queriedCheckout) {
@@ -33,8 +34,6 @@ export const load: PageServerLoad = async ({ params }) => {
 				status: 400
 			};
 		}
-
-		
 
 		// Query profile table with user fallback for display name logic
 		const userProfile = await db
@@ -56,22 +55,26 @@ export const load: PageServerLoad = async ({ params }) => {
 		let calculatedName = 'User';
 		if (userProfile.length > 0) {
 			const profile = userProfile[0];
-			
+
 			try {
 				if (profile.accountType === 'individual') {
 					// Decrypt and combine first and last name
 					const firstName = profile.legalFirstName ? decrypt(profile.legalFirstName) : '';
 					const lastName = profile.legalLastName ? decrypt(profile.legalLastName) : '';
-					calculatedName = firstName && lastName ? `${firstName} ${lastName}` : 
-									firstName || lastName || profile.displayName || profile.userName || 'User';
+					calculatedName =
+						firstName && lastName
+							? `${firstName} ${lastName}`
+							: firstName || lastName || profile.displayName || profile.userName || 'User';
 				} else if (profile.accountType === 'business') {
 					// Decrypt business name
-					calculatedName = profile.registeredBusinessName ? decrypt(profile.registeredBusinessName) : 
-									profile.displayName || profile.userName || 'User';
+					calculatedName = profile.registeredBusinessName
+						? decrypt(profile.registeredBusinessName)
+						: profile.displayName || profile.userName || 'User';
 				} else if (profile.accountType === 'organization') {
 					// Decrypt organization name
-					calculatedName = profile.organizationName ? decrypt(profile.organizationName) : 
-									profile.displayName || profile.userName || 'User';
+					calculatedName = profile.organizationName
+						? decrypt(profile.organizationName)
+						: profile.displayName || profile.userName || 'User';
 				} else {
 					// Fallback to display name or user name
 					calculatedName = profile.displayName || profile.userName || 'User';
@@ -85,12 +88,6 @@ export const load: PageServerLoad = async ({ params }) => {
 
 		// Maintain existing userName structure for compatibility
 		const userName = [{ name: calculatedName }];
-
-		const branding = await db
-			.select()
-			.from(shops)
-			.where(eq(shops.userId, queriedCheckout.userId))
-			.limit(1);
 
 		return {
 			queriedCheckout,

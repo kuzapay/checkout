@@ -17,7 +17,7 @@ import { encrypt, decrypt } from '$lib/cryptography';
 import { eq } from 'drizzle-orm';
 
 export async function POST({ request }) {
-	const { phoneNumber, amount, checkoutId } = await request.json();
+	const { phoneNumber, amount, checkoutId, customerEmail } = await request.json();
 
 	if (!phoneNumber || !amount || !checkoutId) {
 		return json({ success: false, message: 'Expected request data missing' }, { status: 400 });
@@ -37,7 +37,7 @@ export async function POST({ request }) {
 		.where(eq(userCheckouts.checkoutId, checkoutId))
 		.limit(1)
 		.then((res) => res[0]);
-		console.info(checkout)
+	console.info(checkout);
 
 	if (!checkout) {
 		return json({ success: false, message: 'Invalid checkout' }, { status: 404 });
@@ -65,19 +65,23 @@ export async function POST({ request }) {
 	let username = 'User';
 	if (userProfile.length > 0) {
 		const profile = userProfile[0];
-		
+
 		try {
 			if (profile.accountType === 'individual') {
 				const firstName = profile.legalFirstName ? decrypt(profile.legalFirstName) : '';
 				const lastName = profile.legalLastName ? decrypt(profile.legalLastName) : '';
-				username = firstName && lastName ? `${firstName} ${lastName}` : 
-								firstName || lastName || profile.displayName || 'User';
+				username =
+					firstName && lastName
+						? `${firstName} ${lastName}`
+						: firstName || lastName || profile.displayName || 'User';
 			} else if (profile.accountType === 'business') {
-				username = profile.registeredBusinessName ? decrypt(profile.registeredBusinessName) : 
-								profile.displayName || 'User';
+				username = profile.registeredBusinessName
+					? decrypt(profile.registeredBusinessName)
+					: profile.displayName || 'User';
 			} else if (profile.accountType === 'organization') {
-				username = profile.organizationName ? decrypt(profile.organizationName) : 
-								profile.displayName || 'User';
+				username = profile.organizationName
+					? decrypt(profile.organizationName)
+					: profile.displayName || 'User';
 			} else {
 				username = profile.displayName || 'User';
 			}
@@ -113,12 +117,10 @@ export async function POST({ request }) {
 		const timestamp = getTimestamp();
 		const password = getPassword(timestamp);
 
-		const shortId = checkoutId.slice(0, 6);
-
 		// Determine transaction descriptions based on checkout type
 		let accountReference = '';
 		let transactionDesc = '';
-		
+
 		if (checkout.checkoutType === 'recurrent') {
 			// Subscription payment
 			const frequency = checkout.paymentFrequency || 'month';
@@ -139,20 +141,17 @@ export async function POST({ request }) {
 			PartyA: formattedPhone,
 			PartyB: BUSINESS_SHORT_CODE,
 			PhoneNumber: formattedPhone,
-			CallBackURL:"https://api.kuzapay.app/transaction/process/callback",
+			CallBackURL: 'https://api.kuzapay.app/transaction/process/callback',
 			AccountReference: accountReference,
 			TransactionDesc: transactionDesc
 		};
 
-// };
+		// };
 
 		const res = await initialize_mpesa_stk_push(payload, accessToken);
 
 		if (res.ResponseCode !== '0') {
-			return json(
-				{ success: false, message: 'You cancelled the transaction' },
-				{ status: 400 }
-			);
+			return json({ success: false, message: 'You cancelled the transaction' }, { status: 400 });
 		}
 
 		// Encrypt the tracking before returning it to the client
@@ -165,6 +164,7 @@ export async function POST({ request }) {
 			checkoutRequestId: res.CheckoutRequestID,
 			merchantRequestId: res.MerchantRequestID,
 			receiptNumber: null, // NULL initially, will be updated when payment is confirmed
+			customerEmail: customerEmail || null
 		});
 
 		return json(

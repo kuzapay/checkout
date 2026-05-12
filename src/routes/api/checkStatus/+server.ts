@@ -45,9 +45,7 @@ export async function POST({ request }) {
 		// -----------------------------
 		if (status === 'pending' && transaction.checkoutRequestId) {
 			try {
-				const stkStatus = await check_transaction_status(
-					transaction.checkoutRequestId
-				);
+				const stkStatus = await check_transaction_status(transaction.checkoutRequestId);
 
 				console.log('STK QUERY RESPONSE:', stkStatus);
 
@@ -77,18 +75,12 @@ export async function POST({ request }) {
 
 				// STILL PROCESSING
 				else {
-					return json(
-						{ ok: true, status: 'PENDING' },
-						{ status: 202 }
-					);
+					return json({ ok: true, status: 'PENDING' }, { status: 202 });
 				}
 			} catch (err) {
 				console.error('STK QUERY ERROR:', err);
 
-				return json(
-					{ ok: true, status: 'PENDING' },
-					{ status: 202 }
-				);
+				return json({ ok: true, status: 'PENDING' }, { status: 202 });
 			}
 		}
 
@@ -144,16 +136,10 @@ export async function POST({ request }) {
 		// -----------------------------
 		// Unknown state
 		// -----------------------------
-		return json(
-			{ ok: false, message: 'Unknown transaction state' },
-			{ status: 400 }
-		);
+		return json({ ok: false, message: 'Unknown transaction state' }, { status: 400 });
 	} catch (error) {
 		console.error('CHECK_STATUS_ERROR:', error);
 
-		return json(
-			{ ok: false, message: 'Internal server error' },
-			{ status: 500 }
-		);
+		return json({ ok: false, message: 'Internal server error' }, { status: 500 });
 	}
 }

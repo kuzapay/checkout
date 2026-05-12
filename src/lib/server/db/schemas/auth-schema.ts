@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { pgTable, text, timestamp, boolean, index, json, integer } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, boolean, index, integer } from 'drizzle-orm/pg-core';
 
 export const user = pgTable('user', {
 	id: text('id').primaryKey(),
@@ -14,38 +14,40 @@ export const user = pgTable('user', {
 		.notNull()
 });
 
-
 export const profile = pgTable('profile', {
 	id: text('id').primaryKey(),
-	userId: text('user_id').notNull().unique().references(() => user.id, { onDelete: 'cascade' }),
+	userId: text('user_id')
+		.notNull()
+		.unique()
+		.references(() => user.id, { onDelete: 'cascade' }),
 	accountType: text('account_type'), // 'individual' | 'business' | 'organization'
 	displayName: text('display_name'),
 	primaryPhoneNumber: text('primary_phone_number'),
 	disbursementType: text('disbursement_type').notNull(), // 'b2c' | 'b2b'
 	mpesaNumber: text('mpesa_number'),
-	mpesaShortCode:text('mpesa_short_code'),
+	mpesaShortCode: text('mpesa_short_code'),
 	referralSource: text('referral_source'), // where user heard about us
-	
+
 	// KYC Compliance Fields - Individual
 	legalFirstName: text('legal_first_name'),
 	legalLastName: text('legal_last_name'),
 	legalMiddleName: text('legal_middle_name'), // optional
 	nationalIdNumber: text('national_id_number'),
 	dateOfBirth: text('date_of_birth'),
-	
+
 	// KYC Compliance Fields - Business
 	registeredBusinessName: text('registered_business_name'),
 	businessRegistrationNumber: text('business_registration_number'),
 	kraPin: text('kra_pin'),
-	
+
 	// KYC Compliance Fields - Organization
 	organizationName: text('organization_name'),
 	organizationRegistrationNumber: text('organization_registration_number'),
-	
+
 	// Common KYC Fields
 	officialInChargeName: text('official_in_charge_name'),
 	dataConsentConfirmed: boolean('data_consent_confirmed').default(false).notNull(),
-	
+
 	createdAt: timestamp('created_at').defaultNow().notNull(),
 	updatedAt: timestamp('updated_at')
 		.defaultNow()
@@ -175,5 +177,3 @@ export const otpVerification = pgTable(
 		index('otp_expires_idx').on(table.expiresAt)
 	]
 );
-
-
