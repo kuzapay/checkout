@@ -16,6 +16,12 @@ import { db } from '$lib/server/db';
 import { randomUUID } from 'crypto';
 import { encrypt, decrypt } from '$lib/cryptography';
 import { eq } from 'drizzle-orm';
+import { CONSUMER_KEY, CONSUMER_SECRET } from '$env/static/private';
+
+import IntaSend from 'intasend-node';
+
+const intasend = new IntaSend(CONSUMER_KEY, CONSUMER_SECRET, true);
+const collection = intasend.collection();
 
 export async function POST({ request }) {
 	const { phoneNumber, amount, checkoutId, customerEmail } = await request.json();
@@ -120,7 +126,7 @@ export async function POST({ request }) {
 		// const password = getPassword(timestamp);
 
 		// IntaSend test call
-		inititatePaymentProcessor(formattedPhone, numericAmount);
+		// inititatePaymentProcessor(formattedPhone, numericAmount);
 
 		// Commented out database insertion until IntaSend response format is known
 		// const trackingID = encrypt(randomUUID());
@@ -133,6 +139,24 @@ export async function POST({ request }) {
 		// 	receiptNumber: null,
 		// 	customerEmail: customerEmail || null
 		// });
+
+		collection
+		.mpesaStkPush({
+			first_name: 'Joe',
+			last_name: 'Doe',
+			email: 'joe@doe.com',
+			host: 'https://checkout.kuzapay.app',
+			amount: 10,
+			phone_number:'254723659385',
+			api_ref: 'test'
+		})
+		.then((resp) => {
+			// Redirect user to URL to complete payment
+			console.log(`STK Push Resp:`, resp);
+		})
+		.catch((err) => {
+			console.error(`STK Push Resp error:`, err);
+		});
 
 		return json(
 			{
