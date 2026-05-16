@@ -244,7 +244,7 @@
 import { CONSUMER_KEY, CONSUMER_SECRET } from '$env/static/private';
 
 import IntaSend from 'intasend-node';
-const intasend = new IntaSend(CONSUMER_KEY, CONSUMER_SECRET, true); // true for sandbox
+const intasend = new IntaSend(CONSUMER_KEY, CONSUMER_SECRET, false); // true for sandbox
 
 const collection = intasend.collection();
 
