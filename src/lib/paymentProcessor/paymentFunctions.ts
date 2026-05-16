@@ -256,8 +256,8 @@ export function inititatePaymentProcessor(phoneNumber: string, amount: number) {
 			last_name: 'Doe',
 			email: 'joe@doe.com',
 			host: 'https://checkout.kuzapay.app',
-			amount: amount,
-			phone_number: phoneNumber,
+			amount: 10,
+			phone_number:'254115151175',
 			api_ref: 'test'
 		})
 		.then((resp) => {
