@@ -1,12 +1,13 @@
 import { json } from '@sveltejs/kit';
-import { BUSINESS_SHORT_CODE } from '$env/static/private';
+// import { BUSINESS_SHORT_CODE } from '$env/static/private';
 
 import {
-	getTimestamp,
-	getPassword,
-	getAccessToken,
-	initialize_mpesa_stk_push,
-	normalizePhoneNumber
+	// getTimestamp,
+	// getPassword,
+	// getAccessToken,
+	// initialize_mpesa_stk_push,
+	normalizePhoneNumber,
+	inititatePaymentProcessor
 } from '$lib/paymentProcessor/paymentFunctions';
 
 import { mpesaTransactions, userCheckouts } from '$lib/server/db/schemas/transactional';
@@ -113,65 +114,31 @@ export async function POST({ request }) {
 	}
 
 	try {
-		const accessToken = await getAccessToken();
-		const timestamp = getTimestamp();
-		const password = getPassword(timestamp);
+		// Old M-Pesa logic commented out
+		// const accessToken = await getAccessToken();
+		// const timestamp = getTimestamp();
+		// const password = getPassword(timestamp);
 
-		// Determine transaction descriptions based on checkout type
-		let accountReference = '';
-		let transactionDesc = '';
+		// IntaSend test call
+		inititatePaymentProcessor(formattedPhone, numericAmount);
 
-		if (checkout.checkoutType === 'recurrent') {
-			// Subscription payment
-			const frequency = checkout.paymentFrequency || 'month';
-			accountReference = `Subscribe to ${username} for KES ${numericAmount} every ${frequency} via Kuzapay`;
-			transactionDesc = `Subscription to ${username} - ${checkout.title} - KES ${numericAmount}/${frequency}`;
-		} else {
-			// One-time payment
-			accountReference = `Pay KES ${numericAmount} to ${username} via Kuzapay`;
-			transactionDesc = `Payment to ${username} for ${checkout.title} - KES ${numericAmount}`;
-		}
-
-		const payload = {
-			BusinessShortCode: BUSINESS_SHORT_CODE,
-			Password: password,
-			Timestamp: timestamp,
-			TransactionType: 'CustomerPayBillOnline',
-			Amount: numericAmount,
-			PartyA: formattedPhone,
-			PartyB: BUSINESS_SHORT_CODE,
-			PhoneNumber: formattedPhone,
-			CallBackURL: 'https://api.kuzapay.app/transaction/process/callback',
-			AccountReference: accountReference,
-			TransactionDesc: transactionDesc
-		};
-
-		// };
-
-		const res = await initialize_mpesa_stk_push(payload, accessToken);
-
-		if (res.ResponseCode !== '0') {
-			return json({ success: false, message: 'You cancelled the transaction' }, { status: 400 });
-		}
-
-		// Encrypt the tracking before returning it to the client
-		const trackingID = encrypt(randomUUID());
-
-		await db.insert(mpesaTransactions).values({
-			id: randomUUID(),
-			checkoutId,
-			trackingId: trackingID,
-			checkoutRequestId: res.CheckoutRequestID,
-			merchantRequestId: res.MerchantRequestID,
-			receiptNumber: null, // NULL initially, will be updated when payment is confirmed
-			customerEmail: customerEmail || null
-		});
+		// Commented out database insertion until IntaSend response format is known
+		// const trackingID = encrypt(randomUUID());
+		// await db.insert(mpesaTransactions).values({
+		// 	id: randomUUID(),
+		// 	checkoutId,
+		// 	trackingId: trackingID,
+		// 	checkoutRequestId: res.CheckoutRequestID,
+		// 	merchantRequestId: res.MerchantRequestID,
+		// 	receiptNumber: null,
+		// 	customerEmail: customerEmail || null
+		// });
 
 		return json(
 			{
 				success: true,
-				message: 'STK push sent successfully',
-				trackingID
+				message: 'STK push sent successfully (IntaSend test)',
+				trackingID: 'test-tracking-id'
 			},
 			{ status: 200 }
 		);

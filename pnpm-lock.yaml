@@ -11,6 +11,9 @@ importers:
       bcryptjs:
         specifier: ^3.0.3
         version: 3.0.3
+      intasend-node:
+        specifier: ^1.1.2
+        version: 1.1.2
       lucide-svelte:
         specifier: ^1.0.1
         version: 1.0.1(svelte@5.55.4(@typescript-eslint/types@8.58.2))
@@ -1386,6 +1389,9 @@ packages:
   imurmurhash@0.1.4:
     resolution: {integrity: sha512-JmXMZ6wuvDmLiHEml9ykzqO6lwFbof0GG4IkcGaENdCRDDmMVnny7s5HsIgHCbaq0w2MyPhDqkhTUgS2LU2PHA==}
     engines: {node: '>=0.8.19'}
+
+  intasend-node@1.1.2:
+    resolution: {integrity: sha512-V9zQdcKEwFfMhfTKz7OrmSJ73BmBmT7MkjA2iN2k4PyxomOtWVgIYP5zYL9lF0wGuzpJaIp9cI8cZFo06n1TKQ==}
 
   is-extglob@2.1.1:
     resolution: {integrity: sha512-SbKbANkN603Vi4jEZv49LeVJMn4yGwsbzZworEoyEiutsN3nJYdbO36zfhGJ6QEDpOZIFkDtnq5JRxmvl3jsoQ==}
@@ -2986,6 +2992,8 @@ snapshots:
   ignore@7.0.5: {}
 
   imurmurhash@0.1.4: {}
+
+  intasend-node@1.1.2: {}
 
   is-extglob@2.1.1: {}
 

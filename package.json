@@ -46,6 +46,7 @@
 	},
 	"dependencies": {
 		"bcryptjs": "^3.0.3",
+		"intasend-node": "^1.1.2",
 		"lucide-svelte": "^1.0.1"
 	}
 }
