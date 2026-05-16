@@ -150,7 +150,7 @@
 
 		if (savedTrackingId) {
 			// Resume polling for existing transaction
-			startPolling(savedTrackingId);
+			// startPolling(savedTrackingId);
 		}
 	});
 
@@ -179,68 +179,308 @@
 	// -----------------------------
 	// Polling (from backup)
 	// -----------------------------
-	function startPolling(trackingID: string) {
-		if (pollInterval) clearInterval(pollInterval);
+	// function startPolling(trackingID: string) {
+	// 	if (pollInterval) clearInterval(pollInterval);
 
-		polling = true;
+	// 	polling = true;
 
-		pollInterval = setInterval(async () => {
-			try {
-				const res = await fetch('/api/checkStatus', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ trackingID })
-				});
+	// 	pollInterval = setInterval(async () => {
+	// 		try {
+	// 			const res = await fetch('/api/checkStatus', {
+	// 				method: 'POST',
+	// 				headers: { 'Content-Type': 'application/json' },
+	// 				body: JSON.stringify({ trackingID })
+	// 			});
 
-				const data = await res.json();
+	// 			const data = await res.json();
 
-				if (!res.ok) return;
+	// 			if (!res.ok) return;
 
-				if (data.status === 'SUCCESS') {
-					clearInterval(pollInterval!);
-					pollInterval = null;
-					polling = false;
-					success = true;
+	// 			if (data.status === 'SUCCESS') {
+	// 				clearInterval(pollInterval!);
+	// 				pollInterval = null;
+	// 				polling = false;
+	// 				success = true;
 
-					// Clean up localStorage on success
-					const storageKey = `kuzapay_tracking_${checkoutId}`;
-					localStorage.removeItem(storageKey);
-				}
+	// 				// Clean up localStorage on success
+	// 				const storageKey = `kuzapay_tracking_${checkoutId}`;
+	// 				localStorage.removeItem(storageKey);
+	// 			}
 
-				if (data.status === 'FAILED') {
-					clearInterval(pollInterval!);
-					pollInterval = null;
-					polling = false;
-					error = 'Transaction failed or was cancelled.';
+	// 			if (data.status === 'FAILED') {
+	// 				clearInterval(pollInterval!);
+	// 				pollInterval = null;
+	// 				polling = false;
+	// 				error = 'Transaction failed or was cancelled.';
 
-					// Clean up localStorage on failure
-					const storageKey = `kuzapay_tracking_${checkoutId}`;
-					localStorage.removeItem(storageKey);
-				}
+	// 				// Clean up localStorage on failure
+	// 				const storageKey = `kuzapay_tracking_${checkoutId}`;
+	// 				localStorage.removeItem(storageKey);
+	// 			}
 
-				if (data.status === 'PENDING') {
-					polling = true;
-				}
-			} catch (err) {
-				console.error('Polling error:', err);
-			}
-		}, 3000);
+	// 			if (data.status === 'PENDING') {
+	// 				polling = true;
+	// 			}
+	// 		} catch (err) {
+	// 			console.error('Polling error:', err);
+	// 		}
+	// 	}, 3000);
 
-		// safety timeout
-		setTimeout(() => {
-			if (pollInterval) {
-				clearInterval(pollInterval);
-				pollInterval = null;
-				polling = false;
-				error = 'Transaction confirmation timed out. Please try again.';
+	// 	// safety timeout
+	// 	setTimeout(() => {
+	// 		if (pollInterval) {
+	// 			clearInterval(pollInterval);
+	// 			pollInterval = null;
+	// 			polling = false;
+	// 			error = 'Transaction confirmation timed out. Please try again.';
 
-				// Clean up localStorage on timeout
-				const storageKey = `kuzapay_tracking_${checkoutId}`;
-				localStorage.removeItem(storageKey);
-			}
-		}, 120000);
-	}
+	// 			// Clean up localStorage on timeout
+	// 			const storageKey = `kuzapay_tracking_${checkoutId}`;
+	// 			localStorage.removeItem(storageKey);
+	// 		}
+	// 	}, 120000);
+	// }	// function startPolling(trackingID: string) {
+	// 	if (pollInterval) clearInterval(pollInterval);
 
+	// 	polling = true;
+
+	// 	pollInterval = setInterval(async () => {
+	// 		try {
+	// 			const res = await fetch('/api/checkStatus', {
+	// 				method: 'POST',
+	// 				headers: { 'Content-Type': 'application/json' },
+	// 				body: JSON.stringify({ trackingID })
+	// 			});
+
+	// 			const data = await res.json();
+
+	// 			if (!res.ok) return;
+
+	// 			if (data.status === 'SUCCESS') {
+	// 				clearInterval(pollInterval!);
+	// 				pollInterval = null;
+	// 				polling = false;
+	// 				success = true;
+
+	// 				// Clean up localStorage on success
+	// 				const storageKey = `kuzapay_tracking_${checkoutId}`;
+	// 				localStorage.removeItem(storageKey);
+	// 			}
+
+	// 			if (data.status === 'FAILED') {
+	// 				clearInterval(pollInterval!);
+	// 				pollInterval = null;
+	// 				polling = false;
+	// 				error = 'Transaction failed or was cancelled.';
+
+	// 				// Clean up localStorage on failure
+	// 				const storageKey = `kuzapay_tracking_${checkoutId}`;
+	// 				localStorage.removeItem(storageKey);
+	// 			}
+
+	// 			if (data.status === 'PENDING') {
+	// 				polling = true;
+	// 			}
+	// 		} catch (err) {
+	// 			console.error('Polling error:', err);
+	// 		}
+	// 	}, 3000);
+
+	// 	// safety timeout
+	// 	setTimeout(() => {
+	// 		if (pollInterval) {
+	// 			clearInterval(pollInterval);
+	// 			pollInterval = null;
+	// 			polling = false;
+	// 			error = 'Transaction confirmation timed out. Please try again.';
+
+	// 			// Clean up localStorage on timeout
+	// 			const storageKey = `kuzapay_tracking_${checkoutId}`;
+	// 			localStorage.removeItem(storageKey);
+	// 		}
+	// 	}, 120000);
+	// }	// function startPolling(trackingID: string) {
+	// 	if (pollInterval) clearInterval(pollInterval);
+
+	// 	polling = true;
+
+	// 	pollInterval = setInterval(async () => {
+	// 		try {
+	// 			const res = await fetch('/api/checkStatus', {
+	// 				method: 'POST',
+	// 				headers: { 'Content-Type': 'application/json' },
+	// 				body: JSON.stringify({ trackingID })
+	// 			});
+
+	// 			const data = await res.json();
+
+	// 			if (!res.ok) return;
+
+	// 			if (data.status === 'SUCCESS') {
+	// 				clearInterval(pollInterval!);
+	// 				pollInterval = null;
+	// 				polling = false;
+	// 				success = true;
+
+	// 				// Clean up localStorage on success
+	// 				const storageKey = `kuzapay_tracking_${checkoutId}`;
+	// 				localStorage.removeItem(storageKey);
+	// 			}
+
+	// 			if (data.status === 'FAILED') {
+	// 				clearInterval(pollInterval!);
+	// 				pollInterval = null;
+	// 				polling = false;
+	// 				error = 'Transaction failed or was cancelled.';
+
+	// 				// Clean up localStorage on failure
+	// 				const storageKey = `kuzapay_tracking_${checkoutId}`;
+	// 				localStorage.removeItem(storageKey);
+	// 			}
+
+	// 			if (data.status === 'PENDING') {
+	// 				polling = true;
+	// 			}
+	// 		} catch (err) {
+	// 			console.error('Polling error:', err);
+	// 		}
+	// 	}, 3000);
+
+	// 	// safety timeout
+	// 	setTimeout(() => {
+	// 		if (pollInterval) {
+	// 			clearInterval(pollInterval);
+	// 			pollInterval = null;
+	// 			polling = false;
+	// 			error = 'Transaction confirmation timed out. Please try again.';
+
+	// 			// Clean up localStorage on timeout
+	// 			const storageKey = `kuzapay_tracking_${checkoutId}`;
+	// 			localStorage.removeItem(storageKey);
+	// 		}
+	// 	}, 120000);
+	// }	// function startPolling(trackingID: string) {
+	// 	if (pollInterval) clearInterval(pollInterval);
+
+	// 	polling = true;
+
+	// 	pollInterval = setInterval(async () => {
+	// 		try {
+	// 			const res = await fetch('/api/checkStatus', {
+	// 				method: 'POST',
+	// 				headers: { 'Content-Type': 'application/json' },
+	// 				body: JSON.stringify({ trackingID })
+	// 			});
+
+	// 			const data = await res.json();
+
+	// 			if (!res.ok) return;
+
+	// 			if (data.status === 'SUCCESS') {
+	// 				clearInterval(pollInterval!);
+	// 				pollInterval = null;
+	// 				polling = false;
+	// 				success = true;
+
+	// 				// Clean up localStorage on success
+	// 				const storageKey = `kuzapay_tracking_${checkoutId}`;
+	// 				localStorage.removeItem(storageKey);
+	// 			}
+
+	// 			if (data.status === 'FAILED') {
+	// 				clearInterval(pollInterval!);
+	// 				pollInterval = null;
+	// 				polling = false;
+	// 				error = 'Transaction failed or was cancelled.';
+
+	// 				// Clean up localStorage on failure
+	// 				const storageKey = `kuzapay_tracking_${checkoutId}`;
+	// 				localStorage.removeItem(storageKey);
+	// 			}
+
+	// 			if (data.status === 'PENDING') {
+	// 				polling = true;
+	// 			}
+	// 		} catch (err) {
+	// 			console.error('Polling error:', err);
+	// 		}
+	// 	}, 3000);
+
+	// 	// safety timeout
+	// 	setTimeout(() => {
+	// 		if (pollInterval) {
+	// 			clearInterval(pollInterval);
+	// 			pollInterval = null;
+	// 			polling = false;
+	// 			error = 'Transaction confirmation timed out. Please try again.';
+
+	// 			// Clean up localStorage on timeout
+	// 			const storageKey = `kuzapay_tracking_${checkoutId}`;
+	// 			localStorage.removeItem(storageKey);
+	// 		}
+	// 	}, 120000);
+	// }	// function startPolling(trackingID: string) {
+	// 	if (pollInterval) clearInterval(pollInterval);
+
+	// 	polling = true;
+
+	// 	pollInterval = setInterval(async () => {
+	// 		try {
+	// 			const res = await fetch('/api/checkStatus', {
+	// 				method: 'POST',
+	// 				headers: { 'Content-Type': 'application/json' },
+	// 				body: JSON.stringify({ trackingID })
+	// 			});
+
+	// 			const data = await res.json();
+
+	// 			if (!res.ok) return;
+
+	// 			if (data.status === 'SUCCESS') {
+	// 				clearInterval(pollInterval!);
+	// 				pollInterval = null;
+	// 				polling = false;
+	// 				success = true;
+
+	// 				// Clean up localStorage on success
+	// 				const storageKey = `kuzapay_tracking_${checkoutId}`;
+	// 				localStorage.removeItem(storageKey);
+	// 			}
+
+	// 			if (data.status === 'FAILED') {
+	// 				clearInterval(pollInterval!);
+	// 				pollInterval = null;
+	// 				polling = false;
+	// 				error = 'Transaction failed or was cancelled.';
+
+	// 				// Clean up localStorage on failure
+	// 				const storageKey = `kuzapay_tracking_${checkoutId}`;
+	// 				localStorage.removeItem(storageKey);
+	// 			}
+
+	// 			if (data.status === 'PENDING') {
+	// 				polling = true;
+	// 			}
+	// 		} catch (err) {
+	// 			console.error('Polling error:', err);
+	// 		}
+	// 	}, 3000);
+
+	// 	// safety timeout
+	// 	setTimeout(() => {
+	// 		if (pollInterval) {
+	// 			clearInterval(pollInterval);
+	// 			pollInterval = null;
+	// 			polling = false;
+	// 			error = 'Transaction confirmation timed out. Please try again.';
+
+	// 			// Clean up localStorage on timeout
+	// 			const storageKey = `kuzapay_tracking_${checkoutId}`;
+	// 			localStorage.removeItem(storageKey);
+	// 		}
+	// 	}, 120000);
+	// }
+// 
 	// -----------------------------
 	// Trigger STK push (from backup)
 	// -----------------------------
@@ -283,7 +523,7 @@
 			const storageKey = `kuzapay_tracking_${checkoutId}`;
 			localStorage.setItem(storageKey, data.trackingID);
 
-			startPolling(data.trackingID);
+			// startPolling(data.trackingID);
 		} catch {
 			error = 'Failed to send STK push. Please try again.';
 		} finally {
@@ -292,13 +532,13 @@
 	}
 
 	// Cleanup polling on unmount
-	$effect(() => {
-		return () => {
-			if (pollInterval) {
-				clearInterval(pollInterval);
-			}
-		};
-	});
+	// $effect(() => {
+	// 	return () => {
+	// 		if (pollInterval) {
+	// 			clearInterval(pollInterval);
+	// 		}
+	// 	};
+	// });
 </script>
 
 {#if !isValid}

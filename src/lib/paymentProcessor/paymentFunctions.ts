@@ -92,8 +92,6 @@
 // 	ResponseDescription: string;
 // }
 
-
-
 // export const getTimestamp = () => {
 // 	const date = new Date();
 // 	return (
@@ -243,33 +241,31 @@
 // export function validateTillNumber(tillNumber: string): boolean {
 // 	return /^\d{6}$/.test(tillNumber);
 // }
-import {CONSUMER_KEY,CONSUMER_SECRET} from '$env/static/private';
+import { CONSUMER_KEY, CONSUMER_SECRET } from '$env/static/private';
 
 import IntaSend from 'intasend-node';
 const intasend = new IntaSend(CONSUMER_KEY, CONSUMER_SECRET, true); // true for sandbox
 
-let collection = intasend.collection();
+const collection = intasend.collection();
 
-
-export function inititatePaymentProcessor(phoneNumber:string,amount:number){
-
+export function inititatePaymentProcessor(phoneNumber: string, amount: number) {
 	collection
-   .mpesaStkPush({
-  		first_name: 'Joe',
-    	last_name: 'Doe',
-    	email: 'joe@doe.com',
-    	host: 'https://checkout.kuzapay.app',
-  		amount: amount,
-    	phone_number: phoneNumber,
-    	api_ref: 'test',
-  }) .then((resp) => {
-  	// Redirect user to URL to complete payment
-  	 console.log(`STK Push Resp:`,resp);
-	})
-  .catch((err) => {
-     console.error(`STK Push Resp error:`,err);
-  });
-
+		.mpesaStkPush({
+			first_name: 'Joe',
+			last_name: 'Doe',
+			email: 'joe@doe.com',
+			host: 'https://checkout.kuzapay.app',
+			amount: amount,
+			phone_number: phoneNumber,
+			api_ref: 'test'
+		})
+		.then((resp) => {
+			// Redirect user to URL to complete payment
+			console.log(`STK Push Resp:`, resp);
+		})
+		.catch((err) => {
+			console.error(`STK Push Resp error:`, err);
+		});
 }
 
 export function normalizePhoneNumber(input: string): string | null {
